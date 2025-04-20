@@ -29,6 +29,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             overflow: hidden;
+            position: relative;
         }
         #progress-bar-inner {
             height: 100%;
@@ -36,6 +37,7 @@
             background-color: #4caf50;
         }
         #start-game, #download-expansion-assets {
+            margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
             background-color: #007bff;
@@ -53,23 +55,33 @@
             background-color: #0056b3;
         }
         #download-section {
+            margin-top: 40px;
             display: none;
         }
         #start-game:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
+        #progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #000;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
     <div id="progress-container">
-        <h1 id="status">Loading...</h1>
+        <h1 id="status">Legendary</h1>
         <div id="progress-bar">
             <div id="progress-bar-inner"></div>
+            <p id="progress-text">0%</p>
         </div>
-        <p id="progress-text">0%</p>
         <button id="start-game" disabled>Start</button>
-        <div id="download-section"><p>Download expansion assets</p><select id="expansion-assets" name="expansion-assets"></select><button id="download-expansion-assets">Download</button></div>
+        <div id="download-section"><p>Expansion assets</p><select id="expansion-assets" name="expansion-assets"></select><button id="download-expansion-assets">Download</button></div>
     </div>
     <script>
         // Listen for progress updates from the main process
@@ -77,13 +89,20 @@
             const progressPercentage = Math.round((current / total) * 100);
             const progressBarInner = document.getElementById('progress-bar-inner');
             const progressText = document.getElementById('progress-text');
+            const statusText = document.getElementById('status');
 
-            // Update the progress bar and text
+            if (current === total) {
+                statusText.textContent = 'Legendary 0.9.0';
+                progressText.textContent = `100%`;
+            } else if (current > 0) {
+                statusText.textContent = 'Loading...';
+                progressText.textContent = `${progressPercentage}%`;
+            }
             progressBarInner.style.width = `${progressPercentage}%`;
             progressText.textContent = `${progressPercentage}%`;
         });
         window.electron.onAssetBundles((assetBundles) => {
-            const sortedKeys = Object.keys(assetBundles).sort().filter(key => assetBundles[key] > 0);
+            const sortedKeys = Object.keys(assetBundles).sort().filter(key => assetBundles[key].missing > 0);
             document.getElementById('start-game').disabled = false;
 
             if (sortedKeys.length > 0) {
@@ -94,7 +113,7 @@
                 sortedKeys.forEach(key => {
                     const option = document.createElement('option');
                     option.value = key;
-                    option.textContent = key;
+                    option.textContent = assetBundles[key].name;
                     expansionAssetsSelect.appendChild(option);
                 });
             }

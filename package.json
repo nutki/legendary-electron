@@ -5,6 +5,8 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
+    "checkout": "git clone https://github.com/nutki/legendary legendary",
+    "build-legendary": "cd legendary && npm install && npm run build",
     "build": "electron-builder --x64"
   },
   "dependencies": {

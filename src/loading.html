@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #666;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #progress-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        #progress-bar {
+            width: 100%;
+            height: 30px;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background-color: #4caf50;
+        }
+        #start-game, #download-expansion-assets {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #expansion-assets {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+        #action-button:hover {
+            background-color: #0056b3;
+        }
+        #download-section {
+            display: none;
+        }
+        #start-game:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-container">
+        <h1 id="status">Loading...</h1>
+        <div id="progress-bar">
+            <div id="progress-bar-inner"></div>
+        </div>
+        <p id="progress-text">0%</p>
+        <button id="start-game" disabled>Start</button>
+        <div id="download-section"><p>Download expansion assets</p><select id="expansion-assets" name="expansion-assets"></select><button id="download-expansion-assets">Download</button></div>
+    </div>
+    <script>
+        // Listen for progress updates from the main process
+        window.electron.onProgressUpdate(({ current, total }) => {
+            const progressPercentage = Math.round((current / total) * 100);
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const progressText = document.getElementById('progress-text');
+
+            // Update the progress bar and text
+            progressBarInner.style.width = `${progressPercentage}%`;
+            progressText.textContent = `${progressPercentage}%`;
+        });
+        window.electron.onAssetBundles((assetBundles) => {
+            const sortedKeys = Object.keys(assetBundles).sort().filter(key => assetBundles[key] > 0);
+            document.getElementById('start-game').disabled = false;
+
+            if (sortedKeys.length > 0) {
+                const expansionAssetsSelect = document.getElementById('expansion-assets');
+                expansionAssetsSelect.innerHTML = ''; // Clear existing options
+                document.getElementById('download-section').style.display = 'block';
+                // Populate the select element with sorted keys of assetBundles
+                sortedKeys.forEach(key => {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = key;
+                    expansionAssetsSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Add a click event listener to the button
+        document.getElementById('start-game').addEventListener('click', () => {
+            // Send a message to the main process
+            window.electron.sendClickEvent({ button: 'start' });
+        });
+        document.getElementById('download-expansion-assets').addEventListener('click', () => {
+            const selectedAsset = document.getElementById('expansion-assets').value;
+            window.electron.sendClickEvent({ button: 'download', asset: selectedAsset });
+        });
+    </script>
+</body>
+</html>

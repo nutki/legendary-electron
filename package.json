@@ -1,0 +1,43 @@
+{
+  "name": "legendary",
+  "version": "0.9.0",
+  "description": "Legendary",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --x64"
+  },
+  "dependencies": {
+    "sharp": "^0.34.1"
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.0.0",
+    "typescript": "^5.0.0"
+  },
+  "build": {
+    "appId": "nl.szafranski.legendary",
+    "productName": "Legendary",
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "files": [
+      "src/**/*",
+      "legendary/**/*",
+      "!legendary/node_modules/**/*",
+      "!legendary/.git/**/*",
+      "!legendary/**/*.ts",
+      "!legendary/texttools/**/*",
+      "!legendary/leaguesetups/**/*",
+      "!legendary/images/**/*.jpg",
+      "!legendary/images/**/*.png",
+      "!legendary/fonts/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "homepage": "https://github.com/nutki/legendary",
+  "author": "Michal Szafranski"
+}

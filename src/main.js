@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { shell, app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const download = require('../legendary/tools/download');
@@ -56,7 +56,10 @@ async function createWindow() {
             enableRemoteModule: false,
         },
     });
-
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        shell.openExternal(url);
+        return { action: 'deny' };
+    });
     console.log('CWD:', process.cwd());
     console.log('__dirname:', __dirname); 
     console.log('userData', app.getPath('userData'));

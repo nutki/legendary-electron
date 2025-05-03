@@ -78,7 +78,7 @@ async function createWindow() {
 
     mainWindow.loadFile(path.join(__dirname, 'loading.html'));
     // Start the download and asset copying process
-    for (const n of ['cards', 'icons', 'images', 'legendary.html', 'legendary.js', 'legendary.js.map', 'ui.js', 'ui.js.map']) {
+    for (const n of ['cards', 'icons', 'images', 'legendary.html', 'legendary.js', 'legendary.js.map', 'ui.js', 'ui.js.map', 'version.js']) {
         await copyAssetsToUserData(n);
     }
     await download.main("Others", path.join(app.getPath('userData'), 'legendary'), progressCallback);

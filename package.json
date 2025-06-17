@@ -1,12 +1,12 @@
 {
   "name": "legendary",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "Legendary",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "checkout": "git clone https://github.com/nutki/legendary legendary",
-    "update-legendary": "cd legendary && git fetch && git checkout 0.9.8",
+    "update-legendary": "cd legendary && git fetch && git checkout 0.9.9",
     "build-legendary": "cd legendary && npm install && npm run build",
     "build": "electron-builder --x64"
   },
